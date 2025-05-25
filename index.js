@@ -37,7 +37,8 @@ const corsOptions = {
             "https://superadmin-qmet.onrender.com",
             "https://fur-stpre-next-js.vercel.app",
             "https://super-admin-xi.vercel.app",
-            "https://fur-stpre-next-7zstxuy2t-abdullavoras-projects.vercel.app"
+            "https://fur-stpre-next-7zstxuy2t-abdullavoras-projects.vercel.app",
+            "https://perfume-web-kappa.vercel.app"
         ];
 
         if (!origin || allowedOrigins.includes(origin)) {
