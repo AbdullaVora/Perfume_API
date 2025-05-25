@@ -39,7 +39,9 @@ const corsOptions = {
             "https://super-admin-xi.vercel.app",
             "https://fur-stpre-next-7zstxuy2t-abdullavoras-projects.vercel.app",
             "https://perfume-web-kappa.vercel.app",
-            "https://perfume-5grqmwvd5-abdullavoras-projects.vercel.app"
+            "https://perfume-5grqmwvd5-abdullavoras-projects.vercel.app",
+            "https://perfume-admin-lqmtolplk-abdullavoras-projects.vercel.app",
+            "https://perfume-admin-xi.vercel.app"
         ];
 
         if (!origin || allowedOrigins.includes(origin)) {
