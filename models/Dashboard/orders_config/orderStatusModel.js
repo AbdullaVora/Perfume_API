@@ -16,6 +16,10 @@ const orderStatusSchema = new mongoose.Schema(
       enum: ['Pending', 'Process', 'Completed', 'Cancelled'],
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
     status: {
       type: Boolean,
       default: true, // true = active, false = inactive

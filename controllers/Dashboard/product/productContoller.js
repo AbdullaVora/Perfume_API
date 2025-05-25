@@ -120,7 +120,7 @@ const createProduct = async (req, res) => {
             skuCode,
             price,
             mrp,
-            discount,
+            mainDiscount: discount,
             description,
             stockManagement,
             images: uploadedImages,
@@ -627,12 +627,207 @@ const getProductBySlug = async (req, res) => {
     }
 };
 
-// UPDATE product
+// // UPDATE product
+// const updateProduct = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { name, slug, skuCode, brand, category, subcategory, description, details, additional, mrp, price, discount, stockManagement, variants, images, thumbnail, status, main, forPage, forSection } = req.body;
+//         let thumbnailUrl = '';
+
+//         // Find product
+//         const product = await productModel.findById(id)
+//             .populate('category')
+//             .populate('subcategory')
+//             .populate('variants')
+//             .populate('details')
+//             .populate('additional')
+//             .populate('brandCategory')
+//             .populate('brand');
+
+//         if (!product) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Product not found'
+//             });
+//         }
+
+//         // Upload images in parallel
+//         const [uploadedThumbnail, uploadedMain, uploadedImages] = await Promise.all([
+//             uploadImage(thumbnail || product.thumbnail),
+//             uploadImage(main || product.main),
+//             uploadMultipleImages(images.length ? images : product.images)
+//         ]);
+
+//         const productUpdate = await productModel.findByIdAndUpdate(id, {
+//             name, slug, skuCode, price, mrp, mainDiscount: discount, description, stockManagement, images: uploadedImages, thumbnail: uploadedThumbnail, status, main: uploadedMain, forPage, forSection
+//         })
+
+//         // // Handle image uploads
+//         // if (req.files) {
+//         //     const productDir = path.join('uploads', 'product', product._id.toString());
+//         //     const imageDir = path.join(productDir, 'images');
+//         //     const thumbnailDir = path.join(productDir, 'thumbnail');
+
+//         //     // Ensure directories exist
+//         //     createDirectoryIfNotExists(imageDir);
+//         //     createDirectoryIfNotExists(thumbnailDir);
+
+//         //     let images = [];
+
+//         //     // Process images
+//         //     if (req.files.images && req.files.images.length > 0) {
+//         //         for (let i = 0; i < req.files.images.length; i++) {
+//         //             const image = req.files.images[i];
+//         //             const imageName = `image_${i}_${Date.now()}${path.extname(image.originalname)}`;
+//         //             const imagePath = path.join(imageDir, imageName);
+
+//         //             // Save image file
+//         //             fs.writeFileSync(imagePath, image.buffer);
+
+//         //             // Add to product's images array
+//         //             images.push(`${process.env.BACKEND_URL}/uploads/product/${product._id}/images/${imageName}`);
+//         //         }
+//         //     }
+
+//         //     // Process thumbnail
+//         //     if (req.files.thumbnail && req.files.thumbnail.length > 0) {
+//         //         const thumbnail = req.files.thumbnail[0];
+//         //         const thumbnailName = `thumbnail_${Date.now()}${path.extname(thumbnail.originalname)}`;
+//         //         const thumbnailPath = path.join(thumbnailDir, thumbnailName);
+
+//         //         // Save thumbnail file
+//         //         fs.writeFileSync(thumbnailPath, thumbnail.buffer);
+
+//         //         thumbnailUrl = `${process.env.BACKEND_URL}/uploads/product/${product._id}/thumbnail/${thumbnailName}`;
+//         //     }
+
+//         //     // Update product with image URLs
+//         //     const updateImages = await productModel.findByIdAndUpdate((await product)._id, {
+//         //         images: images,
+//         //         thumbnail: thumbnailUrl
+//         //     })
+//         // }
+
+//         let brandId;
+//         if (brand) {
+//             const brandCategory = await brandModel.findByIdAndUpdate(product.brand._id, {
+//                 name: brand,
+//                 brandCategoryId: product.brandCategory._id,
+//                 productId: product._id
+//             })
+//             brandId = brandCategory._id;
+//         } else {
+//             return res.status(404).json({ message: 'brand not found' });
+//         }
+
+//         let categoryId;
+//         if (category) {
+//             const addCategory = await categoriesModel.findByIdAndUpdate(product.category._id, {
+//                 name: category,
+//                 thumbnail: thumbnailUrl,
+//                 productId: product._id
+//             })
+//             categoryId = addCategory._id;
+//         } else {
+//             res.status(404).json({ message: 'category not found' });
+//         }
+
+//         let subcategoryId;
+//         if (subcategory) {
+//             const addSubCategory = await subCategoriesModel.findByIdAndUpdate(product.subcategory._id, {
+//                 name: subcategory,
+//                 thumbnail: thumbnailUrl,
+//                 productId: product._id,
+//                 categoryId: categoryId
+//             })
+//             subcategoryId = addSubCategory._id;
+//         } else {
+//             res.status(404).json({ message: 'subcategory not found' });
+//         }
+
+//         let variantsId;
+//         if (variants) {
+//             console.log(variants)
+//             const variantsData = await variantsModel.findByIdAndUpdate(product.variants._id, {
+//                 variants: variants.map((data) => ({
+//                     id: data.id || `variant_${Date.now()}`,
+//                     data: data.data,
+//                     mrp: data.mrp,
+//                     price: data.price,
+//                     stock: data.stock
+//                 })),
+//                 productId: product._id,
+//             })
+//             variantsId = variantsData._id;
+//         } else {
+//             res.status(404).json({ message: 'variants not found' });
+//         }
+
+//         let detailsId;
+//         if (details) {
+//             const detailsData = await detailsModel.findByIdAndUpdate(product.details._id, {
+//                 details: details.map((data) => ({
+//                     id: data.id || `detail_${Date.now()}`,
+//                     title: data.title,
+//                     value: data.value
+//                 })),
+//                 productId: product._id,
+//             })
+//             detailsId = detailsData._id
+//         } else {
+//             res.status(404).json({ message: 'details not found' });
+//         }
+
+//         let additionalId;
+//         if (additional) {
+//             const additionalData = await additionalModel.findByIdAndUpdate(product.additional._id, {
+//                 additional: additional.map((data) => ({
+//                     id: data.id || `detail_${Date.now()}`,
+//                     title: data.title,
+//                     value: data.value
+//                 })),
+//                 productId: product._id,
+//             })
+//             additionalId = additionalData._id
+//         }
+
+//         if (categoryId && subcategoryId && variantsId && detailsId && additionalId) {
+//             const Ids = {}
+//             Ids.category = categoryId,
+//                 Ids.subcategory = subcategoryId,
+//                 Ids.variants = variantsId,
+//                 Ids.details = detailsId,
+//                 Ids.additional = additionalId,
+//                 Ids.brand = brandId;
+
+//             const updateIds = await productModel.findByIdAndUpdate(product._id, { $set: Ids }, { new: true, runValidators: true });
+//         } else {
+//             res.status(404).json({ message: 'Failed to added IDs' });
+//         }
+
+//         res.status(200).json({ message: "Successfully Updated Product", product })
+
+
+//     } catch (error) {
+//         console.error('Error updating product:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Failed to update product',
+//             error: error.message
+//         });
+//     }
+// };
+
 const updateProduct = async (req, res) => {
+    console.log(req.body)
     try {
         const { id } = req.params;
-        const { name, slug, skuCode, brand, category, subcategory, description, details, additional, mrp, price, discount, stockManagement, variants, images, thumbnail, status, main, forPage, forSection } = req.body;
-        let thumbnailUrl = '';
+        const {
+            name, slug, skuCode, brand, category, subcategory,
+            description, details, additional, mrp, price, discount,
+            stockManagement, variants, images = [], thumbnail, status,
+            main, forPage, forSection
+        } = req.body;
 
         // Find product
         const product = await productModel.findById(id)
@@ -651,162 +846,140 @@ const updateProduct = async (req, res) => {
             });
         }
 
-        // Upload images in parallel
+        // Handle image uploads with proper fallbacks
         const [uploadedThumbnail, uploadedMain, uploadedImages] = await Promise.all([
-            uploadImage(thumbnail || product.thumbnail),
-            uploadImage(main || product.main),
-            uploadMultipleImages(images.length ? images : product.images)
+            thumbnail ? uploadImage(thumbnail) : Promise.resolve(product.thumbnail),
+            main ? uploadImage(main) : Promise.resolve(product.main),
+            images.length > 0 ? uploadMultipleImages(images) : Promise.resolve(product.images)
         ]);
 
-        const productUpdate = await productModel.findByIdAndUpdate(id, {
-            name, slug, skuCode, price, mrp, discount, description, stockManagement, images: uploadedImages, thumbnail: uploadedThumbnail, status, main: uploadedMain, forPage, forSection
-        })
+        // Base product update
+        const updateData = {
+            name: name || product.name,
+            slug: slug || product.slug,
+            skuCode: skuCode || product.skuCode,
+            price: price !== undefined ? price : product.price,
+            mrp: mrp !== undefined ? mrp : product.mrp,
+            mainDiscount: discount !== undefined ? discount : product.mainDiscount,
+            description: description || product.description,
+            stockManagement: stockManagement !== undefined ? stockManagement : product.stockManagement,
+            images: uploadedImages,
+            thumbnail: uploadedThumbnail,
+            status: status !== undefined ? status : product.status,
+            main: uploadedMain,
+            forPage: forPage || product.forPage,
+            forSection: forSection || product.forSection
+        };
 
-        // // Handle image uploads
-        // if (req.files) {
-        //     const productDir = path.join('uploads', 'product', product._id.toString());
-        //     const imageDir = path.join(productDir, 'images');
-        //     const thumbnailDir = path.join(productDir, 'thumbnail');
+        // Update the main product document
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
 
-        //     // Ensure directories exist
-        //     createDirectoryIfNotExists(imageDir);
-        //     createDirectoryIfNotExists(thumbnailDir);
+        // Update related documents in parallel
+        const updatePromises = [];
 
-        //     let images = [];
-
-        //     // Process images
-        //     if (req.files.images && req.files.images.length > 0) {
-        //         for (let i = 0; i < req.files.images.length; i++) {
-        //             const image = req.files.images[i];
-        //             const imageName = `image_${i}_${Date.now()}${path.extname(image.originalname)}`;
-        //             const imagePath = path.join(imageDir, imageName);
-
-        //             // Save image file
-        //             fs.writeFileSync(imagePath, image.buffer);
-
-        //             // Add to product's images array
-        //             images.push(`${process.env.BACKEND_URL}/uploads/product/${product._id}/images/${imageName}`);
-        //         }
-        //     }
-
-        //     // Process thumbnail
-        //     if (req.files.thumbnail && req.files.thumbnail.length > 0) {
-        //         const thumbnail = req.files.thumbnail[0];
-        //         const thumbnailName = `thumbnail_${Date.now()}${path.extname(thumbnail.originalname)}`;
-        //         const thumbnailPath = path.join(thumbnailDir, thumbnailName);
-
-        //         // Save thumbnail file
-        //         fs.writeFileSync(thumbnailPath, thumbnail.buffer);
-
-        //         thumbnailUrl = `${process.env.BACKEND_URL}/uploads/product/${product._id}/thumbnail/${thumbnailName}`;
-        //     }
-
-        //     // Update product with image URLs
-        //     const updateImages = await productModel.findByIdAndUpdate((await product)._id, {
-        //         images: images,
-        //         thumbnail: thumbnailUrl
-        //     })
-        // }
-
-        let brandId;
-        if (brand) {
-            const brandCategory = await brandModel.findByIdAndUpdate(product.brand._id, {
-                name: brand,
-                brandCategoryId: product.brandCategory._id,
-                productId: product._id
-            })
-            brandId = brandCategory._id;
-        } else {
-            return res.status(404).json({ message: 'brand not found' });
+        if (brand && product.brand) {
+            updatePromises.push(
+                brandModel.findByIdAndUpdate(product.brand._id, {
+                    name: brand,
+                    brandCategoryId: product.brandCategory?._id,
+                    productId: product._id
+                })
+            );
         }
 
-        let categoryId;
-        if (category) {
-            const addCategory = await categoriesModel.findByIdAndUpdate(product.category._id, {
-                name: category,
-                thumbnail: thumbnailUrl,
-                productId: product._id
-            })
-            categoryId = addCategory._id;
-        } else {
-            res.status(404).json({ message: 'category not found' });
+        if (category && product.category) {
+            updatePromises.push(
+                categoriesModel.findByIdAndUpdate(product.category._id, {
+                    name: category,
+                    thumbnail: uploadedThumbnail,
+                    productId: product._id
+                })
+            );
         }
 
-        let subcategoryId;
-        if (subcategory) {
-            const addSubCategory = await subCategoriesModel.findByIdAndUpdate(product.subcategory._id, {
-                name: subcategory,
-                thumbnail: thumbnailUrl,
-                productId: product._id,
-                categoryId: categoryId
-            })
-            subcategoryId = addSubCategory._id;
-        } else {
-            res.status(404).json({ message: 'subcategory not found' });
+        if (subcategory && product.subcategory) {
+            updatePromises.push(
+                subCategoriesModel.findByIdAndUpdate(product.subcategory._id, {
+                    name: subcategory,
+                    thumbnail: uploadedThumbnail,
+                    productId: product._id,
+                    categoryId: product.category?._id
+                })
+            );
         }
 
-        let variantsId;
-        if (variants) {
-            console.log(variants)
-            const variantsData = await variantsModel.findByIdAndUpdate(product.variants._id, {
-                variants: variants.map((data) => ({
-                    id: data.id || `variant_${Date.now()}`,
-                    data: data.data,
-                    mrp: data.mrp,
-                    price: data.price,
-                    stock: data.stock
-                })),
-                productId: product._id,
-            })
-            variantsId = variantsData._id;
-        } else {
-            res.status(404).json({ message: 'variants not found' });
+        // In your updateProduct controller, modify the variants section:
+
+        if (variants && product.variants) {
+            // Normalize variants into an array
+            let variantsArray = [];
+
+            if (Array.isArray(variants)) {
+                variantsArray = variants;
+            } else if (Array.isArray(variants.variants)) {
+                variantsArray = variants.variants;
+            }
+
+            updatePromises.push(
+                variantsModel.findByIdAndUpdate(
+                    product.variants._id,
+                    {
+                        variants: variantsArray.map((data) => ({
+                            id: data.id || `variant_${Date.now()}`,
+                            data: Array.isArray(data.data) ? data.data : [],
+                            mrp: data.mrp !== undefined ? data.mrp : 0,
+                            price: data.price !== undefined ? data.price : 0,
+                            stock: data.stock !== undefined ? data.stock : 0
+                        })),
+                        productId: product._id,
+                    },
+                    { new: true }
+                )
+            );
+        }
+ 
+
+        if (details && product.details) {
+            const detailsArray = Array.isArray(details) ? details : [];
+            updatePromises.push(
+                detailsModel.findByIdAndUpdate(product.details._id, {
+                    details: detailsArray.map((data) => ({
+                        id: data.id || `detail_${Date.now()}`,
+                        title: data.title || '',
+                        value: data.value || ''
+                    })),
+                    productId: product._id,
+                })
+            );
         }
 
-        let detailsId;
-        if (details) {
-            const detailsData = await detailsModel.findByIdAndUpdate(product.details._id, {
-                details: details.map((data) => ({
-                    id: data.id || `detail_${Date.now()}`,
-                    title: data.title,
-                    value: data.value
-                })),
-                productId: product._id,
-            })
-            detailsId = detailsData._id
-        } else {
-            res.status(404).json({ message: 'details not found' });
+        if (additional && product.additional) {
+            const additionalArray = Array.isArray(additional) ? additional : [];
+
+            updatePromises.push(
+                additionalModel.findByIdAndUpdate(product.additional._id, {
+                    additional: additionalArray.map((data) => ({
+                        id: data.id || `detail_${Date.now()}`,
+                        title: data.title || '',
+                        value: data.value || ''
+                    })),
+                    productId: product._id,
+                })
+            );
         }
 
-        let additionalId;
-        if (additional) {
-            const additionalData = await additionalModel.findByIdAndUpdate(product.additional._id, {
-                additional: additional.map((data) => ({
-                    id: data.id || `detail_${Date.now()}`,
-                    title: data.title,
-                    value: data.value
-                })),
-                productId: product._id,
-            })
-            additionalId = additionalData._id
-        }
+        // Wait for all updates to complete
+        await Promise.all(updatePromises);
 
-        if (categoryId && subcategoryId && variantsId && detailsId && additionalId) {
-            const Ids = {}
-            Ids.category = categoryId,
-                Ids.subcategory = subcategoryId,
-                Ids.variants = variantsId,
-                Ids.details = detailsId,
-                Ids.additional = additionalId,
-                Ids.brand = brandId;
-
-            const updateIds = await productModel.findByIdAndUpdate(product._id, { $set: Ids }, { new: true, runValidators: true });
-        } else {
-            res.status(404).json({ message: 'Failed to added IDs' });
-        }
-
-        res.status(200).json({ message: "Successfully Updated Product", product })
-
+        res.status(200).json({
+            success: true,
+            message: "Product updated successfully",
+            product: updatedProduct
+        });
 
     } catch (error) {
         console.error('Error updating product:', error);
@@ -817,7 +990,6 @@ const updateProduct = async (req, res) => {
         });
     }
 };
-
 
 // DELETE product
 // const deleteProduct = async (req, res) => {
@@ -894,20 +1066,20 @@ const updateProduct = async (req, res) => {
 
 const getPublicIdFromUrl = (url) => {
     try {
-      const urlObj = new URL(url);
-      const parts = urlObj.pathname.split('/');
-  
-      const versionIndex = parts.findIndex(p => /^v\d+/.test(p)); // finds v1746707471
-      const publicIdParts = parts.slice(versionIndex + 1); // ['products', 'gglxtwhcelccccgko1re.jpg']
-      const publicId = publicIdParts.join('/').replace(/\.[^/.]+$/, ''); // remove .jpg, .png, etc.
-  
-      return publicId; // e.g. 'products/gglxtwhcelccccgko1re'
+        const urlObj = new URL(url);
+        const parts = urlObj.pathname.split('/');
+
+        const versionIndex = parts.findIndex(p => /^v\d+/.test(p)); // finds v1746707471
+        const publicIdParts = parts.slice(versionIndex + 1); // ['products', 'gglxtwhcelccccgko1re.jpg']
+        const publicId = publicIdParts.join('/').replace(/\.[^/.]+$/, ''); // remove .jpg, .png, etc.
+
+        return publicId; // e.g. 'products/gglxtwhcelccccgko1re'
     } catch (err) {
-      console.warn('Invalid Cloudinary URL:', url);
-      return null;
+        console.warn('Invalid Cloudinary URL:', url);
+        return null;
     }
-  };
-  
+};
+
 
 const deleteProduct = async (req, res) => {
     try {

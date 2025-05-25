@@ -38,7 +38,7 @@ const getOrders = async (req, res) => {
             userEmail: order?.email,
             billingDetail: order?.firstName + ' ' + order?.lastName,
             amount: order?.total,
-            discount: order?.discount,
+            discount: order?.couponDiscount,
             paymentMethod: order?.paymentMethod,
             transactionID: order?.upiDetails?.upiId || order?.cardDetails?.cardNumber,
             shippingDetail: order?.address + ', ' + order?.city + ', ' + order?.state + ', ' + order?.zipCode,

@@ -103,6 +103,8 @@
 // module.exports = AllOrders; // Fix: was 'allOrders' but should be 'AllOrders'
 
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid'); // Using UUID for unique IDs
+
 
 const ordersSchema = new mongoose.Schema(
     {
@@ -188,12 +190,6 @@ const ordersSchema = new mongoose.Schema(
             required: false
         },
         cart: [{
-
-            // productId: {
-            //     type: mongoose.Schema.Types.ObjectId,
-            //     ref: 'Product', // Reference to your Product model if you have one
-            //     required: true
-            // },
             product: {
                 type: mongoose.Schema.Types.Mixed,
                 required: true
@@ -209,6 +205,19 @@ const ordersSchema = new mongoose.Schema(
                     label: String,
                     value: String
                 }]
+            },
+            orderStatus: { type: String, default: "pending" },
+            isDeleted: { type: Boolean, default: false },
+            orderId: {
+                type: String,
+                default: function () {
+                    // Using UUID to generate a unique ID
+                    return `Order-${uuidv4()}`;
+
+                    // Alternatively, you could use a timestamp + random number:
+                    // return `Order-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+                },
+                unique: true // Ensures each orderId is unique in the database
             },
             thumbnail: String,
             mainImage: String
@@ -231,7 +240,7 @@ const ordersSchema = new mongoose.Schema(
             required: true,
             min: 0
         },
-        discount: {
+        couponDiscount: {
             type: Number,
             default: 0,
             min: 0
@@ -261,6 +270,10 @@ const ordersSchema = new mongoose.Schema(
             type: String,
             enum: ['pending', 'paid', 'failed', 'refunded'],
             default: 'pending'
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         }
     },
     {
@@ -277,10 +290,10 @@ const ordersSchema = new mongoose.Schema(
 // ordersSchema.index({ paymentStatus: 1 });
 // ordersSchema.index({ createdAt: -1 });
 
-const 
+const
 
 
 
-AllOrders = mongoose.model('allOrders', ordersSchema);
+    AllOrders = mongoose.model('allOrders', ordersSchema);
 
 module.exports = AllOrders; // Fix: was 'allOrders' but should be 'AllOrders'

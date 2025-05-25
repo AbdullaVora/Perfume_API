@@ -12,10 +12,10 @@ const VariantSchema = new mongoose.Schema({
 
 const CartSchema = new mongoose.Schema({
     userId: {
-        type: String, 
+        type: String,
     },
     product: {
-        type: mongoose.Schema.Types.ObjectId, 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
     },
@@ -29,6 +29,7 @@ const CartSchema = new mongoose.Schema({
         type: VariantSchema,
         default: null
     },
+
 }, { timestamps: true });
 
 const Cart = mongoose.model('Cart', CartSchema);

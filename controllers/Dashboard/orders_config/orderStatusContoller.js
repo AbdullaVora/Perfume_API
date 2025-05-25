@@ -1,6 +1,7 @@
 const { orderValidation } = require("../../../helpers/JoiValidation");
 const AllOrders = require("../../../models/Dashboard/orders_config/allOrdersModel");
 const orderStatus = require("../../../models/Dashboard/orders_config/orderStatusModel");
+const productModel = require("../../../models/Dashboard/product/productModel");
 
 // Create a new order status
 exports.createOrderStatus = async (req, res) => {
@@ -56,8 +57,11 @@ exports.getOrderStatusById = async (req, res) => {
 // Update an order status
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { orderCode, orderName, orderStatus } = req.body;
+        const { orderCode, orderName, orderStatus, isDeleted } = req.body;
         const { id } = req.params
+
+        // console.log(req.body)
+        // console.log(id)
 
 
         // Find the order first
@@ -67,7 +71,7 @@ exports.updateOrderStatus = async (req, res) => {
                 { 'cart._id': id }
             ]
         });
-        // console.log(order)
+        console.log(id)
         if (!order) return res.status(404).json({ message: 'Order not found' });
 
         // Update only the 'name' field in cart, keeping other details intact
@@ -81,9 +85,45 @@ exports.updateOrderStatus = async (req, res) => {
             });
         }
 
+        if (typeof isDeleted !== 'undefined') {
+            for (const item of order.cart) {
+                // const productId = item.product._id || item.product;
+                // await productModel.findByIdAndUpdate(productId, { isDeleted });
+                if (typeof isDeleted !== 'undefined') {
+                    order.cart.forEach((item) => {
+                        item.product.isDeleted = isDeleted;
+                    });
+
+                    // Let Mongoose know we changed nested data
+                    order.markModified('cart');
+                }
+
+            }
+        }
+
+        // if (orderStatus) {
+        //     for (const item of order.cart) {
+        //         order.cart.forEach((item) => {
+        //             const cart = item.find((data) => data._id == id);
+        //             cart.orderStatus = orderStatus || "Cancelled";
+        //         });
+        //         // Let Mongoose know we changed nested data
+        //         order.markModified('cart');
+        //     }
+        // }
+
+        if (orderStatus) {
+            const cartItem = order.cart.find((item) => item._id == id);
+            if (cartItem) {
+                cartItem.orderStatus = orderStatus || "Cancelled";
+                // Let Mongoose know we changed nested data
+                order.markModified('cart');
+            }
+        }
+
+
         // Update other fields
-        order.orderCode = orderCode || order.orderCode;
-        order.orderStatus = orderStatus || order.orderStatus;
+        // order.orderCode = orderCode || order.orderCode;
 
         // Save the updated order
         const updatedOrder = await order.save();

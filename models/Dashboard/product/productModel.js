@@ -17,7 +17,7 @@ const ProductSchema = new mongoose.Schema(
     description: { type: String },
     price: { type: Number, required: true },
     mrp: { type: Number, required: true },
-    // discount: { type: Number, default: 0 },
+    mainDiscount: { type: Number, default: 0 },
     stockManagement: { type: Boolean },
     updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
