@@ -7,6 +7,7 @@ const ProductSchema = new mongoose.Schema(
     skuCode: { type: String, required: true },
     brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
     images: [{ type: String }],
+    videos: [{ type: String }],
     thumbnail: { type: String },
     main: { type: String },
     forPage: { type: String, required: true },

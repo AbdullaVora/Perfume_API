@@ -12,7 +12,7 @@ require('dotenv').config();
 const multer = require('multer');
 const Brand = require('../../../models/Dashboard/product_config/brandModel');
 const brandModel = require('../../../models/Dashboard/product/brandModel');
-const { uploadImage, uploadMultipleImages } = require('../../../helpers/Cloudinary');
+const { uploadMedia, uploadMultipleMedia } = require('../../../helpers/Cloudinary');
 const { uploader } = require('cloudinary').v2;
 
 
@@ -99,18 +99,22 @@ const createProduct = async (req, res) => {
             stockManagement,
             images,
             thumbnail,
-            main,
+            mainMedia,
+            videos,
             forPage,
             forSection
         } = req.body;
 
 
         // // Upload images in parallel
-        const [uploadedThumbnail, uploadedMain, uploadedImages] = await Promise.all([
-            uploadImage(thumbnail),
-            uploadImage(main),
-            uploadMultipleImages(images)
+        const [uploadedThumbnail, uploadedMain, uploadedImages, uploadVideos] = await Promise.all([
+            uploadMedia(thumbnail),
+            uploadMedia(mainMedia),
+            uploadMultipleMedia(images),
+            uploadMultipleMedia(videos)
         ]);
+
+        console.log(uploadedImages, uploadedThumbnail, uploadedMain, uploadVideos)
 
 
         // Create the initial product without images
@@ -126,6 +130,7 @@ const createProduct = async (req, res) => {
             images: uploadedImages,
             thumbnail: uploadedThumbnail,
             main: uploadedMain,
+            videos: uploadVideos,
             forPage,
             forSection
         });
@@ -547,7 +552,9 @@ const getAllProducts = async (req, res) => {
             .populate('brandCategory')
             .populate('brand');
 
+        console.log('Products fetched successfully:', products);
         res.status(200).json(products);
+
 
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -826,7 +833,7 @@ const updateProduct = async (req, res) => {
             name, slug, skuCode, brand, category, subcategory,
             description, details, additional, mrp, price, discount,
             stockManagement, variants, images = [], thumbnail, status,
-            main, forPage, forSection
+            mainMedia, videos, forPage, forSection
         } = req.body;
 
         // Find product
@@ -847,11 +854,24 @@ const updateProduct = async (req, res) => {
         }
 
         // Handle image uploads with proper fallbacks
-        const [uploadedThumbnail, uploadedMain, uploadedImages] = await Promise.all([
-            thumbnail ? uploadImage(thumbnail) : Promise.resolve(product.thumbnail),
-            main ? uploadImage(main) : Promise.resolve(product.main),
-            images.length > 0 ? uploadMultipleImages(images) : Promise.resolve(product.images)
+        // const [uploadedThumbnail, uploadedMain, uploadedImages, uploadVideos] = await Promise.all([
+        //     thumbnail ? uploadMedia(thumbnail) : Promise.resolve(product.thumbnail),
+        //     main ? uploadMedia(mainMedia) : Promise.resolve(product.main),
+        //     images.length > 0 ? uploadMultipleMedia(images) : Promise.resolve(product.images),
+        //     videos.length > 0 ? uploadMultipleMedia(videos) : Promise.resolve(product.videos)
+        // ]);
+
+        console.log("images", images)
+        const [uploadedThumbnail, uploadedMain, uploadedImages, uploadVideos] = await Promise.all([
+            uploadMedia(thumbnail),
+            uploadMedia(mainMedia),
+            uploadMultipleMedia(images),
+            uploadMultipleMedia(videos)
         ]);
+
+
+        console.log(uploadedImages, uploadedThumbnail, uploadedMain, uploadVideos)
+
 
         // Base product update
         const updateData = {
@@ -864,6 +884,7 @@ const updateProduct = async (req, res) => {
             description: description || product.description,
             stockManagement: stockManagement !== undefined ? stockManagement : product.stockManagement,
             images: uploadedImages,
+            videos: uploadVideos,
             thumbnail: uploadedThumbnail,
             status: status !== undefined ? status : product.status,
             main: uploadedMain,
@@ -941,7 +962,7 @@ const updateProduct = async (req, res) => {
                 )
             );
         }
- 
+
 
         if (details && product.details) {
             const detailsArray = Array.isArray(details) ? details : [];

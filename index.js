@@ -23,6 +23,7 @@ const addToCartRoute = require("./routers/ECommerce/addToCartRouter");
 const WishRoute = require("./routers/ECommerce/wishRouter")
 const inquiryRoute = require("./routers/ECommerce/inquiryRouter")
 const subAdminRoute = require("./routers/Dashboard/SubAdmin/subAdmiRouter")
+const EmailSentRoute = require("./routers/Dashboard/EmailSent/EmailSentRouter")
 
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "300mb" }));
@@ -58,27 +59,19 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// ✅ Ensure uploads directory exists on startup
-const uploadDir = path.join(__dirname, 'uploads');
+// Enhanced static file serving
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res, filePath) => {
+        res.set('Cache-Control', 'public, max-age=31536000');
+        res.set('Access-Control-Allow-Origin', '*'); // Or use specific domain
+        res.set('Access-Control-Allow-Credentials', 'true');
 
-// const ensureUploadsDirectory = () => {
-//     try {
-//         if (!fs.existsSync(uploadDir)) {
-//             fs.mkdirSync(uploadDir, { recursive: true });
-//             console.log('✅ "uploads" directory created.');
-//         } else {
-//             console.log('📂 "uploads" directory already exists.');
-//         }
-//     } catch (error) {
-//         console.error('❌ Error creating "uploads" directory:', error);
-//     }
-// };
-
-// // Call function to ensure uploads directory exists
-// ensureUploadsDirectory();
-
-// ✅ Serve static files from uploads directory
-app.use('/uploads', express.static(uploadDir))
+        // Handle filenames with spaces
+        if (filePath.includes(' ')) {
+            res.set('Content-Disposition', `inline; filename="${path.basename(filePath)}"`);
+        }
+    }
+}));
 
 app.get('/', (req, res) => {
     res.send('Welcome To My FurStore API!! Server Running.....');
@@ -87,6 +80,7 @@ app.get('/', (req, res) => {
 app.use("/api/auth", loginRoute)
 app.use("/api/auth", forgotRouter)
 
+app.use("/api/dashboard", EmailSentRoute)
 app.use("/api/dashboard", categoryRoute)
 app.use("/api/dashboard", variantsRoute)
 app.use("/api/dashboard", brandRoute)
@@ -99,6 +93,7 @@ app.use("/api/dashboard", paymentMethodRoute)
 app.use("/api/dashboard", shippinPartnerRoute)
 app.use("/api/dashboard", socialLinksRoute)
 app.use("/api/dashboard", productRoute)
+
 app.use("/api/dashboard", subAdminRoute)
 
 app.use("/api/e-commerce", addToCartRoute)
@@ -106,7 +101,7 @@ app.use("/api/e-commerce", WishRoute)
 app.use("/api/e-commerce", inquiryRoute)
 
 // Start the server
-app.listen(PORT,(err) => {
+app.listen(PORT, (err) => {
     if (err) console.error(err);
     else connectDB(); console.log(`Server is running on http://localhost:${PORT}`);
 });

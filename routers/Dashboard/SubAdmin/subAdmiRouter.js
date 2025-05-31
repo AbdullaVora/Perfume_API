@@ -6,7 +6,7 @@ const authMiddleware = require('../../../middleware/authToken');
 // Create a new sub-admin
 router.post('/addSubAdmin', authMiddleware, createSubAdmin);
 router.get('/getSubAdmins', getAllSubAdmins);
-router.get('/:id', getSubAdminById);
+// router.get('/:id', getSubAdminById);
 router.put('/updateSubAdmin/:id', authMiddleware, updateSubAdmin);
 router.delete('/deleteSubAdmin/:id', authMiddleware, deleteSubAdmin);
 

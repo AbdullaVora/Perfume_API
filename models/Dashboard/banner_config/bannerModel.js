@@ -15,11 +15,11 @@ const bannerSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        desktopImage: {
+        desktopMedia: {
             type: String,
             required: true,
         },
-        mobileImage: {
+        mobileMedia: {
             type: String,
             required: true,
         },

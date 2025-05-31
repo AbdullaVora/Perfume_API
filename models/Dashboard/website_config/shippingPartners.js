@@ -5,14 +5,21 @@ const ShippingPartnerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    loginId: {
+    contactNumber: {
         type: String,
         required: true,
-        unique: true
     },
-    password: {
+    vehicleNumber: {
         type: String,
-        required: true
+        required: true,
+    },
+    frontAadharPhoto: {
+        type: String,
+        required: true,
+    },
+    backAadharPhoto: {
+        type: String,
+        required: true,
     },
     status: {
         type: Boolean,
@@ -28,7 +35,7 @@ const ShippingPartnerSchema = new mongoose.Schema({
     }
 });
 
-ShippingPartnerSchema.pre('save', function(next) {
+ShippingPartnerSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
 });

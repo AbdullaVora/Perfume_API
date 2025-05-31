@@ -85,19 +85,34 @@ exports.updateOrderStatus = async (req, res) => {
             });
         }
 
+        // if (typeof isDeleted !== 'undefined') {
+        //     for (const item of order.cart) {
+        //         // const productId = item.product._id || item.product;
+        //         // await productModel.findByIdAndUpdate(productId, { isDeleted });
+        //         if (typeof isDeleted !== 'undefined') {
+        //             order.cart.forEach((item) => {
+        //                 item.isDeleted = isDeleted;
+        //             });
+
+        //             // Let Mongoose know we changed nested data
+        //             order.markModified('cart');
+        //         }
+
+        //     }
+        // }
+
         if (typeof isDeleted !== 'undefined') {
-            for (const item of order.cart) {
-                // const productId = item.product._id || item.product;
-                // await productModel.findByIdAndUpdate(productId, { isDeleted });
-                if (typeof isDeleted !== 'undefined') {
-                    order.cart.forEach((item) => {
-                        item.product.isDeleted = isDeleted;
-                    });
+            // Find the index of the item with matching id
+            const itemIndex = order.cart.findIndex(item => item.id === id);
 
-                    // Let Mongoose know we changed nested data
-                    order.markModified('cart');
-                }
+            if (itemIndex !== -1) { // If item exists
+                // Update isDeleted for only the matched item
+                order.cart[itemIndex].isDeleted = isDeleted;
 
+                // Notify Mongoose of the nested change
+                order.markModified('cart');
+            } else {
+                console.error("Cart item not found with id:", id);
             }
         }
 
