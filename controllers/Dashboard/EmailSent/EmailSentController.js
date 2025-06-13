@@ -1,39 +1,19 @@
 // controllers/emailController.js
-
-const nodemailer = require('nodemailer');
 const EmailModal = require('../../../models/Dashboard/EmailSent/EmailSentModal');
+const send = require('../../../utils/email');
 
-// Configure your email transporter (example for Gmail)
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
-});
-
-exports.sendEmail = async (req, res) => {
+const sendEmail = async (req, res) => {
   try {
     const { to, subject, text, inquiryId, mobile } = req.body.emailData;
-    // console.log("Email data:", to, subject, text, inquiryId);
 
-    // Send email
-    const mailOptions = {
-      from: process.env.ADMIN_EMAIL,
-      to,
-      subject,
-      text
-    };
+    const info = await send({ to, subject, text });
 
-    const info = await transporter.sendMail(mailOptions);
-
-    // Save to database
     const emailRecord = await EmailModal.create({
       inquiry: inquiryId,
       to,
       subject,
       message: text,
-      mobile: mobile,
+      mobile,
       status: 'sent',
       messageId: info.messageId
     });
@@ -53,16 +33,17 @@ exports.sendEmail = async (req, res) => {
   }
 };
 
-exports.getEmails = async (req, res) => {
+
+const getEmails = async (req, res) => {
   try {
     const emails = await EmailModal.find()
     const emailData = emails.map(email => ({
       id: email._id,
       inquiry: email.inquiry,
-      to: email.to,
+      Email: email.to,
+      mobile: email.mobile,
       subject: email.subject,
       message: email.message,
-      mobile: email.mobile,
       sentAt: email.createdAt,
       status: email.status,
       isAction: true,
@@ -78,3 +59,73 @@ exports.getEmails = async (req, res) => {
     });
   }
 }
+
+const updateEmail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Find the email by ID and update its status
+    const updatedEmail = await EmailModal.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedEmail) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Email updated successfully',
+      data: updatedEmail
+    });
+  } catch (error) {
+    console.error('Error updating email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update email',
+      error: error.message
+    });
+  }
+}
+
+const deleteEmail = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the email by ID and delete it
+    const deletedEmail = await EmailModal.findByIdAndDelete(id);
+
+    if (!deletedEmail) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Email deleted successfully',
+      data: deletedEmail
+    });
+  } catch (error) {
+    console.error('Error deleting email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete email',
+      error: error.message
+    });
+  }
+}
+
+module.exports = {
+  sendEmail,
+  getEmails,
+  updateEmail,
+  deleteEmail
+};

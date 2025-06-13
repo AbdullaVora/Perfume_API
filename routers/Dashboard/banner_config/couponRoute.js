@@ -4,10 +4,10 @@ const { createCoupon, getAllCoupons, getCouponById, updateCoupon, deleteCoupon }
 const authMiddleware = require("../../../middleware/authToken");
 
 // Routes for coupon CRUD operations
-router.post("/addCoupon", authMiddleware, createCoupon);
+router.post("/addCoupon",  createCoupon);
 router.get("/coupons", getAllCoupons);
 router.get("/couponsById/:id", getCouponById);
-router.put("/updateCoupon/:id", authMiddleware, updateCoupon);
-router.delete("/deleteCoupon/:id", authMiddleware, deleteCoupon);
+router.put("/updateCoupon/:id",  updateCoupon);
+router.delete("/deleteCoupon/:id",  deleteCoupon);
 
 module.exports = router;

@@ -6,10 +6,10 @@ const authMiddleware = require("../../../middleware/authToken");
 // Set up the router
 const router = express.Router();
 
-router.post("/addBanner", authMiddleware, createBanner);
+router.post("/addBanner",  createBanner);
 router.get("/banners", getBanners);
 router.get("/bannerById/:id", getBannerById);
-router.put("/updateBanner/:id", authMiddleware, updateBanner);
+router.put("/updateBanner/:id",  updateBanner);
 router.delete("/deleteBanner/:id", deleteBanner);
 
 module.exports = router;

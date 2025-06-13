@@ -3,10 +3,10 @@ const { createSocialLink, getAllSocialLinks, getSocialLinkById, updateSocialLink
 const authMiddleware = require('../../../middleware/authToken');
 const router = express.Router();
 
-router.post('/addSocialLinks', authMiddleware, createSocialLink);
+router.post('/addSocialLinks',  createSocialLink);
 router.get('/sociallinks', getAllSocialLinks);
 router.get('/socialLinksById/:id', getSocialLinkById);
-router.put('/updateSocialLinks/:id', authMiddleware, updateSocialLink);
-router.delete('/deleteSocialLinks/:id', authMiddleware, deleteSocialLink);
+router.put('/updateSocialLinks/:id',  updateSocialLink);
+router.delete('/deleteSocialLinks/:id',  deleteSocialLink);
 
 module.exports = router;

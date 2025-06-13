@@ -85,6 +85,9 @@ const createProduct = async (req, res) => {
         const {
             name,
             slug,
+            metaTitle,
+            metaDescription,
+            metaKeywords,
             skuCode,
             brand,
             category,
@@ -121,6 +124,9 @@ const createProduct = async (req, res) => {
         const product = await productModel.create({
             name,
             slug,
+            metaTitle,
+            metaDescription,
+            metaKeywords,
             skuCode,
             price,
             mrp,
@@ -830,7 +836,7 @@ const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const {
-            name, slug, skuCode, brand, category, subcategory,
+            name, slug, metaTitle, metaDescription, metaKeywords, skuCode, brand, category, subcategory,
             description, details, additional, mrp, price, discount,
             stockManagement, variants, images = [], thumbnail, status,
             mainMedia, videos, forPage, forSection
@@ -877,6 +883,9 @@ const updateProduct = async (req, res) => {
         const updateData = {
             name: name || product.name,
             slug: slug || product.slug,
+            metaTitle: metaTitle || product.metaTitle,
+            metaDescription: metaDescription || product.metaDescription,
+            metaKeywords: metaKeywords || product.metaKeywords,
             skuCode: skuCode || product.skuCode,
             price: price !== undefined ? price : product.price,
             mrp: mrp !== undefined ? mrp : product.mrp,

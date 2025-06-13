@@ -132,9 +132,12 @@ const ordersSchema = new mongoose.Schema(
             trim: true,
             required: true
         },
-        address: {
+        addressLine1: {
             type: String,
             required: true
+        },
+        addressLine2: {
+            type: String,
         },
         city: {
             type: String,
@@ -274,6 +277,9 @@ const ordersSchema = new mongoose.Schema(
         isDeleted: {
             type: Boolean,
             default: false
+        },
+        qrCode: {
+            type: String,
         }
     },
     {

@@ -3,10 +3,10 @@ const { createCategory, getCategories, getCategoryById, updateCategory, deleteCa
 const authMiddleware = require("../../../middleware/authToken");
 const router = express.Router();
 
-router.post("/addCategories", authMiddleware, createCategory);
+router.post("/addCategories",  createCategory);
 router.get("/getCategories", getCategories);
 router.get("/getCategoriesId/:id", getCategoryById);
-router.put("/updateCategories/:id", authMiddleware, updateCategory);
-router.delete("/deleteCategories/:id", authMiddleware, deleteCategory);
+router.put("/updateCategories/:id",  updateCategory);
+router.delete("/deleteCategories/:id",  deleteCategory);
 
 module.exports = router;

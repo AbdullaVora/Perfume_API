@@ -4,6 +4,9 @@ const ProductSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     slug: { type: String, required: true },
+    metaTitle: { type: String, required: true },
+    metaDescription: { type: String, required: true },
+    metaKeywords: { type: String, required: true },
     skuCode: { type: String, required: true },
     brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
     images: [{ type: String }],

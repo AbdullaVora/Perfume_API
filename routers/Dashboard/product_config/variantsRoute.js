@@ -3,10 +3,10 @@ const { createVariants, getVariants, getVariantsById, updateVariants, deleteVari
 const authMiddleware = require("../../../middleware/authToken");
 const router = express.Router();
 
-router.post("/addVariants", authMiddleware, createVariants);
+router.post("/addVariants",  createVariants);
 router.get("/getVariants", getVariants);
 router.get("/getVariantsId/:id", getVariantsById);
-router.put("/updateVariants/:id", authMiddleware, updateVariants);
-router.delete("/deleteVariants/:id", authMiddleware, deleteVariants);
+router.put("/updateVariants/:id",  updateVariants);
+router.delete("/deleteVariants/:id",  deleteVariants);
 
 module.exports = router;

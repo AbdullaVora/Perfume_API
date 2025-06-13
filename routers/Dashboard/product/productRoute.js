@@ -10,7 +10,7 @@ const authMiddleware = require('../../../middleware/authToken');
 
 
 // Public routes - added directly to the server
-router.post('/addProduct', authMiddleware, createProduct)
+router.post('/addProduct',  createProduct)
 router.get('/products', getAllProducts);
 router.put('/updateProduct/:id', updateProduct);
 router.get('/api/product/:id', getProductById);

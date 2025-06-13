@@ -1,5 +1,5 @@
 const express = require("express");
-const { sendEmail, getEmails } = require("../../../controllers/Dashboard/EmailSent/EmailSentController");
+const { sendEmail, getEmails, deleteEmail } = require("../../../controllers/Dashboard/EmailSent/EmailSentController");
 
 
 // Set up the router
@@ -9,7 +9,7 @@ router.post("/addInquiryEmail", sendEmail);
 router.get("/getInquiryEmails", getEmails);
 // router.get("/getInquiryEmails", getBanners);
 // router.get("/getInquiryEmailById/:id", getBannerById);
-// router.put("/updateInquiryEmail/:id", authMiddleware, updateBanner);
-// router.delete("/deleteInquiryEmail/:id", deleteBanner);
+// router.put("/updateInquiryEmail/:id",  updateBanner);
+router.delete("/deleteInquiryEmail/:id", deleteEmail);
 
 module.exports = router;

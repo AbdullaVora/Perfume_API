@@ -7,17 +7,17 @@ const authMiddleware = require('../../middleware/authToken');
 // router.use(authMiddleware);
 
 // Add to wishlist
-router.post('/wish', authMiddleware, addToWishlist);
+router.post('/wish',  addToWishlist);
 
 // Get user's wishlist
 router.get('/getWish', allWhish);
 
-router.get('/getWishUser/:userId', authMiddleware, getUserWishlist);
+router.get('/getWishUser/:userId',  getUserWishlist);
 
 // Remove from wishlist
-router.delete('/deleteWish/:id', authMiddleware, removeFromWishlist);
+router.delete('/deleteWish/:id',  removeFromWishlist);
 
 // Check if product is in wishlist
-router.get('/check/:userId/:productId', authMiddleware, checkWishlistItem);
+router.get('/check/:userId/:productId',  checkWishlistItem);
 
 module.exports = router;

@@ -59,6 +59,8 @@ exports.updateOrderStatus = async (req, res) => {
     try {
         const { orderCode, orderName, orderStatus, isDeleted } = req.body;
         const { id } = req.params
+        console.log(req.params);
+        console.log("Update Order Status ID:", id);
 
         // console.log(req.body)
         // console.log(id)
@@ -128,7 +130,9 @@ exports.updateOrderStatus = async (req, res) => {
         // }
 
         if (orderStatus) {
+            console.log(orderStatus)
             const cartItem = order.cart.find((item) => item._id == id);
+            console.log(cartItem)
             if (cartItem) {
                 cartItem.orderStatus = orderStatus || "Cancelled";
                 // Let Mongoose know we changed nested data
@@ -161,5 +165,61 @@ exports.deleteOrderStatus = async (req, res) => {
         res.status(200).json({ success: true, message: 'Order status deleted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Get order by ID (matches either main order ID or cart item ID)
+exports.getOrderById = async (req, res) => {
+    try {
+        console.log(req.params)
+        const { id } = req.params;
+        console.log("Order ID:", id);
+
+        // Search for order where either:
+        // 1. The main order _id matches
+        // 2. Any cart item _id matches
+        const order = await AllOrders.findOne({
+            orderCode: id
+            // $or: [
+            //     // { _id: id },
+            //     { 'orderCode': id }
+            // ]
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // If we matched by cart item ID, find the specific cart item
+        let matchedItem = null;
+        if (!order._id.equals(id)) {
+            matchedItem = order.cart.find(item => item._id.equals(id));
+        }
+
+        // Format the response
+        const response = {
+            success: true,
+            data: {
+                order: {
+                    _id: order._id,
+                    orderCode: order.orderCode,
+                    createdAt: order.createdAt,
+                    updatedAt: order.updatedAt,
+                    // Include other order fields you need
+                },
+                // Include the specific cart item if we matched by item ID
+                ...(matchedItem && { cartItem: matchedItem })
+            }
+        };
+
+        res.status(200).json(order);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };

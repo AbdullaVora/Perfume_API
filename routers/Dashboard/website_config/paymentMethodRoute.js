@@ -4,10 +4,10 @@ const authMiddleware = require('../../../middleware/authToken');
 const router = express.Router();
 
 
-router.post('/addPaymentMethods', authMiddleware, createPaymentMethod);
+router.post('/addPaymentMethods',  createPaymentMethod);
 router.get('/paymentMethods', getAllPaymentMethods);
 router.get('/paymentMethodsById/:id', getPaymentMethodById);
-router.put('/updatePaymentMethods/:id', authMiddleware, updatePaymentMethod);
-router.delete('/deletePaymentMethods/:id', authMiddleware, deletePaymentMethod);
+router.put('/updatePaymentMethods/:id',  updatePaymentMethod);
+router.delete('/deletePaymentMethods/:id',  deletePaymentMethod);
 
 module.exports = router;

@@ -24,6 +24,7 @@ const WishRoute = require("./routers/ECommerce/wishRouter")
 const inquiryRoute = require("./routers/ECommerce/inquiryRouter")
 const subAdminRoute = require("./routers/Dashboard/SubAdmin/subAdmiRouter")
 const EmailSentRoute = require("./routers/Dashboard/EmailSent/EmailSentRouter")
+const AddressRoute = require("./routers/ECommerce/addressRouter")
 
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "300mb" }));
@@ -99,6 +100,8 @@ app.use("/api/dashboard", subAdminRoute)
 app.use("/api/e-commerce", addToCartRoute)
 app.use("/api/e-commerce", WishRoute)
 app.use("/api/e-commerce", inquiryRoute)
+
+app.use("/api/address", AddressRoute)
 
 // Start the server
 app.listen(PORT, (err) => {
