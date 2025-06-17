@@ -577,7 +577,7 @@ const getProductById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const product = await Product.findById(id)
+        const product = await productModel.findById(id)
             .populate('category')
             .populate('subcategory')
             .populate('details')

@@ -13,7 +13,7 @@ const authMiddleware = require('../../../middleware/authToken');
 router.post('/addProduct',  createProduct)
 router.get('/products', getAllProducts);
 router.put('/updateProduct/:id', updateProduct);
-router.get('/api/product/:id', getProductById);
+router.get('/IdpProduct/:id', getProductById);
 router.get('/api/product/slug/:slug', getProductBySlug);
 router.delete('/deleteProduct/:id', deleteProduct);
 

@@ -134,7 +134,6 @@ const ordersSchema = new mongoose.Schema(
         },
         addressLine1: {
             type: String,
-            required: true
         },
         addressLine2: {
             type: String,
@@ -271,7 +270,7 @@ const ordersSchema = new mongoose.Schema(
         },
         paymentStatus: {
             type: String,
-            enum: ['pending', 'paid', 'failed', 'refunded'],
+            enum: ['pending', 'paid', 'failed', 'refunded', 'complete'],
             default: 'pending'
         },
         isDeleted: {

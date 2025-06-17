@@ -2,7 +2,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
 // Initialize Razorpay instance
-const razorpay = new Razorpay({
+const razorPay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
